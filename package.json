@@ -1,0 +1,27 @@
+{
+  "name": "@mapbox/xds",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": ">=8"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mapbox",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "@grpc/proto-loader": "https://github.com/rclark/proto-loader/tarball/1c20fb52759c385f9aca7e733c24f6fe4c69fc97",
+    "grpc": "^1.18.0",
+    "envoy-data-plane-api": "https://github.com/rclark/data-plane-api/tarball/953ebd530271bceb53f3605816665cfa4905d7ab"
+  },
+  "devDependencies": {
+    "@mapbox/eslint-config-mapbox": "^1.2.1",
+    "eslint": "^5.12.1",
+    "eslint-plugin-node": "^8.0.1"
+  },
+  "eslintConfig": {
+    "extends": "@mapbox/eslint-config-mapbox"
+  }
+}

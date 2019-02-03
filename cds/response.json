@@ -1,0 +1,22 @@
+{
+  "type_url": "type.googleapis.com/envoy.api.v2.Cluster",
+  "resources": [
+    {
+      "@type": "type.googleapis.com/envoy.api.v2.Cluster",
+      "name": "service_google",
+      "connect_timeout": { "seconds": 10 },
+      "type": "LOGICAL_DNS",
+      "lb_policy": "ROUND_ROBIN",
+      "tls_context": { "sni": "www.google.com" },
+      "dns_lookup_family": "V4_ONLY",
+      "hosts": [
+        {
+          "socket_address": {
+            "address": "www.google.com",
+            "port_value": 443
+          }
+        }
+      ]
+    }
+  ]
+}

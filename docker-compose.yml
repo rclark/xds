@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+
+  rds:
+    build:
+      context: ./
+      dockerfile: ./rds/Dockerfile
+    volumes:
+    - ./rds/response.json:/usr/local/src/response.json
+    expose:
+    - 8001
+    networks:
+    - xds-testing
+
+  cds:
+    build:
+      context: ./
+      dockerfile: ./cds/Dockerfile
+    volumes:
+    - ./cds/response.json:/usr/local/src/response.json
+    expose:
+    - 8001
+    networks:
+    - xds-testing
+
+  envoy:
+    image: envoyproxy/envoy:latest
+    volumes:
+    - ./envoy.yaml:/etc/envoy/envoy.yaml
+    command: /usr/local/bin/envoy -l error --component-log-level config:debug,router:debug -c /etc/envoy/envoy.yaml
+    expose:
+    - 9901
+    - 10000
+    ports:
+    - 9901:9901
+    - 10000:10000
+    networks:
+    - xds-testing
+
+networks:
+  xds-testing:

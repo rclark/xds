@@ -1,0 +1,221 @@
+syntax = "proto3";
+
+package envoy.api.v2;
+
+service RouteDiscoveryService {
+  rpc StreamRoutes(stream DiscoveryRequest) returns (stream DiscoveryResponse) {
+  }
+
+  rpc IncrementalRoutes(stream IncrementalDiscoveryRequest)
+      returns (stream IncrementalDiscoveryResponse) {
+  }
+
+  rpc FetchRoutes(DiscoveryRequest) returns (DiscoveryResponse) {
+    option (Http) = {
+      post: "/v2/discovery:routes"
+      body: "*"
+    };
+  }
+}
+
+message RouteConfiguration {
+  string name = 1;
+
+  repeated VirtualHost virtual_hosts = 2;
+
+  repeated string internal_only_headers = 3;
+
+  repeated HeaderValueOption response_headers_to_add = 4;
+
+  repeated string response_headers_to_remove = 5;
+
+  repeated HeaderValueOption request_headers_to_add = 6;
+
+  repeated string request_headers_to_remove = 8;
+
+  google.protobuf.BoolValue validate_clusters = 7;
+}
+
+message DiscoveryRequest {
+  string version_info = 1;
+
+  core.Node node = 2;
+
+  repeated string resource_names = 3;
+
+  string type_url = 4;
+
+  string response_nonce = 5;
+
+  google.rpc.Status error_detail = 6;
+}
+
+message DiscoveryResponse {
+  string version_info = 1;
+
+  repeated google.protobuf.Any resources = 2
+
+  bool canary = 3;
+
+  string type_url = 4;
+
+  string nonce = 5;
+}
+
+message IncrementalDiscoveryRequest {
+  core.Node node = 1;
+
+  string type_url = 2;
+
+  repeated string resource_names_subscribe = 3;
+
+  repeated string resource_names_unsubscribe = 4;
+
+  map<string, string> initial_resource_versions = 5;
+
+  string response_nonce = 6;
+
+  google.rpc.Status error_detail = 7;
+}
+
+message IncrementalDiscoveryResponse {
+  string system_version_info = 1;
+
+  repeated Resource resources = 2 [(gogoproto.nullable) = false];
+
+  repeated string removed_resources = 6;
+
+  string nonce = 5;
+}
+
+message Resource {
+  string version = 1;
+
+  google.protobuf.Any resource = 2;
+}
+
+message Http {
+  repeated HttpRule rules = 1;
+
+  bool fully_decode_reserved_expansion = 2;
+}
+
+message HttpRule {
+  string selector = 1;
+
+  oneof pattern {
+    string get = 2;
+
+    string put = 3;
+
+    string post = 4;
+
+    string delete = 5;
+
+    string patch = 6;
+
+    CustomHttpPattern custom = 8;
+  }
+
+  string body = 7;
+
+  string response_body = 12;
+
+  repeated HttpRule additional_bindings = 11;
+}
+message CustomHttpPattern {
+  string kind = 1;
+
+  string path = 2;
+}
+
+message VirtualHost {
+  string name = 1 [(validate.rules).string.min_bytes = 1];
+
+  repeated string domains = 2 [(validate.rules).repeated .min_items = 1];
+
+  repeated Route routes = 3 [(gogoproto.nullable) = false];
+
+  enum TlsRequirementType {
+    NONE = 0;
+
+    EXTERNAL_ONLY = 1;
+
+    ALL = 2;
+  }
+
+  TlsRequirementType require_tls = 4;
+
+  repeated VirtualCluster virtual_clusters = 5;
+
+  repeated RateLimit rate_limits = 6;
+
+  repeated core.HeaderValueOption request_headers_to_add = 7
+      [(validate.rules).repeated .max_items = 1000];
+
+  repeated string request_headers_to_remove = 13;
+
+  repeated core.HeaderValueOption response_headers_to_add = 10
+      [(validate.rules).repeated .max_items = 1000];
+
+  repeated string response_headers_to_remove = 11;
+
+  CorsPolicy cors = 8;
+
+  reserved 9;
+
+  map<string, google.protobuf.Struct> per_filter_config = 12 [deprecated = true];
+
+  map<string, google.protobuf.Any> typed_per_filter_config = 15;
+
+  bool include_request_attempt_count = 14;
+
+  RetryPolicy retry_policy = 16;
+}
+
+message HeaderValue {
+  string key = 1 [(validate.rules).string = {min_bytes: 1, max_bytes: 16384}];
+
+  string value = 2 [(validate.rules).string.max_bytes = 16384];
+}
+
+message HeaderValueOption {
+  HeaderValue header = 1 [(validate.rules).message.required = true];
+
+  google.protobuf.BoolValue append = 2;
+}
+
+message Node {
+  // An opaque node identifier for the Envoy node. This also provides the local
+  // service node name. It should be set if any of the following features are
+  // used: :ref:`statsd <arch_overview_statistics>`, :ref:`CDS
+  // <config_cluster_manager_cds>`, and :ref:`HTTP tracing
+  // <arch_overview_tracing>`, either in this message or via
+  // :option:`--service-node`.
+  string id = 1;
+
+  // Defines the local service cluster name where Envoy is running. Though
+  // optional, it should be set if any of the following features are used:
+  // :ref:`statsd <arch_overview_statistics>`, :ref:`health check cluster
+  // verification <envoy_api_field_core.HealthCheck.HttpHealthCheck.service_name>`,
+  // :ref:`runtime override directory <envoy_api_msg_config.bootstrap.v2.Runtime>`,
+  // :ref:`user agent addition
+  // <envoy_api_field_config.filter.network.http_connection_manager.v2.HttpConnectionManager.add_user_agent>`,
+  // :ref:`HTTP global rate limiting <config_http_filters_rate_limit>`,
+  // :ref:`CDS <config_cluster_manager_cds>`, and :ref:`HTTP tracing
+  // <arch_overview_tracing>`, either in this message or via
+  // :option:`--service-cluster`.
+  string cluster = 2;
+
+  // Opaque metadata extending the node identifier. Envoy will pass this
+  // directly to the management server.
+  google.protobuf.Struct metadata = 3;
+
+  // Locality specifying where the Envoy instance is running.
+  Locality locality = 4;
+
+  // This is motivated by informing a management server during canary which
+  // version of Envoy is being tested in a heterogeneous fleet. This will be set
+  // by Envoy in management server RPCs.
+  string build_version = 5;
+}
