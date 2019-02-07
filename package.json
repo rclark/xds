@@ -13,8 +13,11 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "@grpc/proto-loader": "https://github.com/rclark/proto-loader/tarball/1c20fb52759c385f9aca7e733c24f6fe4c69fc97",
+    "envoy-data-plane-api": "https://github.com/rclark/data-plane-api/tarball/953ebd530271bceb53f3605816665cfa4905d7ab",
     "grpc": "^1.18.0",
-    "envoy-data-plane-api": "https://github.com/rclark/data-plane-api/tarball/953ebd530271bceb53f3605816665cfa4905d7ab"
+    "koa": "^2.7.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0"
   },
   "devDependencies": {
     "@mapbox/eslint-config-mapbox": "^1.2.1",

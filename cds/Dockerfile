@@ -9,6 +9,6 @@ COPY ./package.json ./
 COPY ./package-lock.json ./
 RUN npm ci --production
 
-COPY ./cds/server.js ./cds/server.js
+COPY ./cds/rest-server.js ./cds/server.js
 
 CMD node ./cds/server.js

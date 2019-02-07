@@ -13,10 +13,10 @@ admin:
 dynamic_resources: 
   cds_config: 
     api_config_source:
-      api_type: GRPC
-      grpc_services:
-        envoy_grpc:
-          cluster_name: cds
+      api_type: REST
+      refresh_delay: 10s
+      cluster_names:
+      - cds
           
 static_resources:
   listeners:
@@ -56,7 +56,7 @@ static_resources:
     connect_timeout: 0.25s
     type: LOGICAL_DNS
     lb_policy: ROUND_ROBIN
-    http2_protocol_options: { }
+    # http2_protocol_options: { }
     hosts:
     - socket_address:
         address: cds
