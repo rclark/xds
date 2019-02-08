@@ -9,14 +9,17 @@ const router = new Router();
 
 app.use(bodyParser({ enableTypes: ['json'] }));
 
+app.use((ctx, next) => {
+  let msg = `${ctx.request.method} ${ctx.request.url} from ${ctx.request.body.node.cluster}:${ctx.request.body.node.id}`;
+  if (ctx.request.body.resource_names)
+    msg += ` | requested: ${ctx.request.body.resource_names.join(', ')}`;
+  console.log(msg);
+  next();
+});
+
 router
 
   .post('/v2/discovery\\:clusters', async (ctx) => {
-    console.log(`${ctx.request.method} ${ctx.request.url}`);
-    console.log(`cluster: ${ctx.request.body.node.cluster} | node: ${ctx.request.body.node.id}`);
-    if (ctx.request.body.resource_names)
-      console.log(`requested resources: ${ctx.request.body.resource_names.join(', ')}`);
-
     ctx.status = 200;
     ctx.body = {
       resources: [
@@ -42,11 +45,6 @@ router
   })
 
   .post('/v2/discovery\\:routes', async (ctx) => {
-    console.log(`${ctx.request.method} ${ctx.request.url}`);
-    console.log(`cluster: ${ctx.request.body.node.cluster} | node: ${ctx.request.body.node.id}`);
-    if (ctx.request.body.resource_names)
-      console.log(`requested resources: ${ctx.request.body.resource_names.join(', ')}`);
-
     ctx.status = 200;
     ctx.body = {
       resources: [
