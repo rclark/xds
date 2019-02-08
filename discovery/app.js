@@ -76,7 +76,4 @@ app.use(router.allowedMethods());
 
 module.exports = app;
 
-if (require.main === module)
-  app.listen(8001);
-
 

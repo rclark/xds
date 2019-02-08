@@ -9,6 +9,6 @@ COPY ./package.json ./
 COPY ./package-lock.json ./
 RUN npm ci --production
 
-COPY ./discovery/discovery.js ./discovery/discovery.js
+COPY ./discovery/*.js ./discovery/
 
-CMD node ./discovery/discovery.js
+CMD node ./discovery/http2.js
