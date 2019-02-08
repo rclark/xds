@@ -2,25 +2,10 @@ version: "3"
 
 services:
 
-  rds:
+  discovery:
     build:
       context: ./
-      dockerfile: ./rds/Dockerfile
-    volumes:
-    - ./rds/response.json:/usr/local/src/response.json
-    expose:
-    - 8001
-    networks:
-    - xds-testing
-    logging:
-      driver: none
-
-  cds:
-    build:
-      context: ./
-      dockerfile: ./cds/Dockerfile
-    volumes:
-    - ./cds/response.json:/usr/local/src/response.json
+      dockerfile: ./discovery/Dockerfile
     expose:
     - 8001
     networks:
@@ -28,8 +13,7 @@ services:
 
   envoy:
     depends_on:
-    - cds
-    - rds
+    - discovery
     image: envoyproxy/envoy:latest
     volumes:
     - ./envoy.yaml:/etc/envoy/envoy.yaml
@@ -42,8 +26,6 @@ services:
     - 10000:10000
     networks:
     - xds-testing
-    # logging:
-    #   driver: none
 
 networks:
   xds-testing:

@@ -14,9 +14,9 @@ dynamic_resources:
   cds_config: 
     api_config_source:
       api_type: REST
-      refresh_delay: 10s
+      refresh_delay: 20s
       cluster_names:
-      - cds
+      - discovery
           
 static_resources:
   listeners:
@@ -37,27 +37,16 @@ static_resources:
             route_config_name: listener_0_for_google
             config_source:
               api_config_source:
-                api_type: GRPC
-                grpc_services:
-                  envoy_grpc:
-                    cluster_name: rds
+                api_type: REST
+                refresh_delay: 20s
+                cluster_names:
+                - discovery
   clusters:
-  - name: rds
+  - name: discovery
     connect_timeout: 0.25s
     type: LOGICAL_DNS
     lb_policy: ROUND_ROBIN
-    http2_protocol_options: { }
     hosts:
     - socket_address:
-        address: rds
-        port_value: 8001
-
-  - name: cds
-    connect_timeout: 0.25s
-    type: LOGICAL_DNS
-    lb_policy: ROUND_ROBIN
-    # http2_protocol_options: { }
-    hosts:
-    - socket_address:
-        address: cds
+        address: discovery
         port_value: 8001
