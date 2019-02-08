@@ -5,7 +5,7 @@ services:
   discovery:
     build:
       context: ./
-      dockerfile: ./discovery/Dockerfile
+      dockerfile: ./http2/Dockerfile
     expose:
     - 8001
     networks:
